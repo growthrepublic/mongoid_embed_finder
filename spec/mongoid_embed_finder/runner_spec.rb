@@ -31,5 +31,13 @@ describe MongoidEmbedFinder::Runner do
         expect(door).to eq cars[1].doors[1]
       end
     end
+
+    context "child does not exist" do
+      let(:wrong_id) { "5369f2d8417274e9d8000000" }
+
+      it "returns nil" do
+        expect(subject.first(id: wrong_id)).to be_nil
+      end
+    end
   end
 end

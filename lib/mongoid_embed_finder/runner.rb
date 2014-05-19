@@ -12,6 +12,7 @@ module MongoidEmbedFinder
 
     def first(parent: {}, **attrs)
       nested_attrs = find_first(attrs, parent: parent)
+      return nil unless nested_attrs
       build_child_with_parent(nested_attrs)
     end
 
