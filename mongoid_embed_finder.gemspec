@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
     parent record with a whole bunch of embedded documents. Instead it instantiates
     found embedded documents first and then sets parent association.
   ]
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/growthrepublic/mongoid_embed_finder"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
