@@ -3,14 +3,14 @@ require "mongoid_embed_finder/relation_discovery"
 
 describe MongoidEmbedFinder::RelationDiscovery do
   describe "#relations" do
-    subject { described_class.new(Child, :parent).relations }
+    subject { described_class.new(Door, :car).relations }
 
-    its(:child_class)  { should eq Child }
-    its(:parent_class) { should eq Parent }
+    its(:child_class)  { should eq Door }
+    its(:parent_class) { should eq Car }
 
-    its('children.key')        { should eq "children" }
-    its('children.class_name') { should eq "Child" }
+    its('children.key')        { should eq "doors" }
+    its('children.class_name') { should eq "Door" }
 
-    its('parent.setter') { should eq "parent=" }
+    its('parent.setter') { should eq "car=" }
   end
 end
