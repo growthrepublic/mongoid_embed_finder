@@ -17,18 +17,58 @@ describe MongoidEmbedFinder::Runner do
 
     context "by child_id and parent_id" do
       it "returns the child" do
-        door = subject.first(
+        result = subject.first(
           id: cars[1].doors[1].id.to_s,
           parent: { id: cars[1].id.to_s })
 
-        expect(door).to eq cars[1].doors[1]
+        expect(result).to eq cars[1].doors[1]
+      end
+
+      context "not listed parent's attributes" do
+        it "sets only id" do
+          result = subject.first(
+            id: cars[1].doors[1].id.to_s,
+            parent: { id: cars[1].id.to_s })
+
+          expect(result.car.id).to eq cars[1].id
+          expect(result.car.name).to be_nil
+        end
+      end
+
+      context "listed parent's attributes" do
+        it "sets listed attributes" do
+          result = subject.first(
+            id: cars[1].doors[1].id.to_s,
+            parent: { id: cars[1].id.to_s, include_fields: [:name] })
+
+          expect(result.car.id).to eq cars[1].id
+          expect(result.car.name).to eq cars[1].name
+        end
       end
     end
 
     context "no parent attributes" do
       it "returns the child" do
-        door = subject.first(id: cars[1].doors[1].id.to_s)
-        expect(door).to eq cars[1].doors[1]
+        result = subject.first(id: cars[1].doors[1].id.to_s)
+        expect(result).to eq cars[1].doors[1]
+      end
+
+      context "not listed parent's attributes" do
+        it "sets only id" do
+          result = subject.first(id: cars[1].doors[1].id.to_s)
+          expect(result.car.id).to eq cars[1].id
+          expect(result.car.name).to be_nil
+        end
+      end
+
+      context "listed parent's attributes" do
+        it "sets listed attributes" do
+          result = subject.first(id: cars[1].doors[1].id.to_s,
+            parent: { include_fields: [:name] })
+
+          expect(result.car.id).to eq cars[1].id
+          expect(result.car.name).to eq cars[1].name
+        end
       end
     end
 

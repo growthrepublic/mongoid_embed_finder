@@ -19,19 +19,38 @@ describe MongoidEmbedFinder::Projectors::Single do
   end
 
   describe "#project" do
-    it "extend parent's criteria" do
-      subject.project
-      expect(query).to have_received(:scope_parent).with(subject.projection)
+    context "without fields to include" do
+      it "extend parent's criteria" do
+        subject.project
+        expect(query).to have_received(:scope_parent).with(subject.projection)
+      end
+
+      it "projects query" do
+        subject.project
+        expect(query).to have_received(:execute)
+        expect(query.execute).to have_received(:select).with(subject.projection)
+      end
+
+      it "returns projection result" do
+        expect(subject.project).to eq projection_result
+      end
     end
 
-    it "projects query" do
-      subject.project
-      expect(query).to have_received(:execute)
-      expect(query.execute).to have_received(:select).with(subject.projection)
-    end
+    context "with fields to include" do
+      it "extend parent's criteria" do
+        subject.project
+        expect(query).to have_received(:scope_parent).with(subject.projection)
+      end
 
-    it "returns projection result" do
-      expect(subject.project).to eq projection_result
+      it "projects query with parent's fields" do
+        subject.project([:name])
+        expect(query).to have_received(:execute)
+        expect(query.execute).to have_received(:select).with(subject.projection.merge(name: 1))
+      end
+
+      it "returns projection result" do
+        expect(subject.project).to eq projection_result
+      end
     end
   end
 end

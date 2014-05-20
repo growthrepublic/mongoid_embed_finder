@@ -20,7 +20,8 @@ module MongoidEmbedFinder
 
     def find_first(attrs = {}, parent: {})
       query = build_nested_query(attrs, parent: parent)
-      project_query(query, Projectors::Single).first
+      project_query(query, Projectors::Single,
+        parent_fields: parent.fetch(:include_fields, [])).first
     end
 
     def build_nested_query(attrs = {}, parent: {})
@@ -28,13 +29,13 @@ module MongoidEmbedFinder
       child_criteria  = relations.child_class.criteria
 
       NestedQuery.new(parent_criteria, child_criteria).tap do |query|
-        query.scope_parent(parent)
+        query.scope_parent(parent.except(:include_fields))
         query.scope_child(attrs)
       end
     end
 
-    def project_query(query, projector_class)
-      projector_class.new(query, relations.children).project
+    def project_query(query, projector_class, parent_fields: [])
+      projector_class.new(query, relations.children).project(parent_fields)
     end
 
     def build_child_with_parent(nested_attrs)

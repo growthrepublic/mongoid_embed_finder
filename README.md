@@ -28,10 +28,11 @@ Let's say that you have defined two classes as follows:
       include Mongoid::Document
       embedded_in :car
     end
-    
+
     class Car
       include Mongoid::Document
       embeds_many :doors
+      field :name, type: String
     end
 
 Now you can easily retrieve instances of `Door` class using `finder`:
@@ -52,6 +53,16 @@ If you have `door_id` and `car_id` as well, you can narrow scope of cars:
 
 In general you can basically pass any set of child's and parent's attributes.
 Latter group should be passed under `parent` key. Those attributes are passed down to `Mongoid::Criteria`.
+
+### Warning!
+
+If your embedded object has other referenced entities they will not be loaded.
+
+By default no parent's attributes are set except its primary key. It is deliberate to limit
+amount of returned data.
+To retrieve parent's attributes list them under `parent.include_fields` as follows:
+
+    finder.first(id: door_id, parent: { id: car_id, include_fields: [:name] })
 
 ## Contributing
 
