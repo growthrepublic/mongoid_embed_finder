@@ -1,8 +1,13 @@
 module MongoidEmbedFinder
   module Projectors
-    class Base < Struct.new(:relation, :criteria)
+    class Base < Struct.new(:query, :relation)
       def projection
-        { relation.key => { operator => criteria.selector }}
+        { relation.key => { operator => query.child_criteria.selector }}
+      end
+
+      def project
+        query.scope_parent(projection)
+        query.execute.select(projection)
       end
 
       def operator

@@ -1,6 +1,6 @@
-require "mongoid_embed_finder/projectors/base"
-require "mongoid_embed_finder/projectors/single"
+require "mongoid_embed_finder/nested_query"
 require "mongoid_embed_finder/nested_builder"
+require "mongoid_embed_finder/projectors/single"
 require "mongoid_embed_finder/relation_discovery"
 
 module MongoidEmbedFinder
@@ -19,26 +19,22 @@ module MongoidEmbedFinder
     private
 
     def find_first(attrs = {}, parent: {})
-      scope_parent(parent)
-      project(attrs, with: Projectors::Single)
-      execute_query.first
+      query = build_nested_query(attrs, parent: parent)
+      project_query(query, Projectors::Single).first
     end
 
-    def scope_parent(attrs = {})
-      @parent_criteria ||= relations.parent_class.criteria
-      @parent_criteria.selector.merge!(attrs)
+    def build_nested_query(attrs = {}, parent: {})
+      parent_criteria = relations.parent_class.criteria
+      child_criteria  = relations.child_class.criteria
+
+      NestedQuery.new(parent_criteria, child_criteria).tap do |query|
+        query.scope_parent(parent)
+        query.scope_child(attrs)
+      end
     end
 
-    def project(attrs = {}, with: Projectors::Base)
-      child_criteria  = relations.child_class.criteria.where(attrs)
-      @projector = with.new(relations.children, child_criteria)
-      scope_parent(@projector.projection)
-    end
-
-    def execute_query
-      relations.parent_class.collection
-        .find(@parent_criteria.selector)
-        .select(@projector.projection)
+    def project_query(query, projector_class)
+      projector_class.new(query, relations.children).project
     end
 
     def build_child_with_parent(nested_attrs)
