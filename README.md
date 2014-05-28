@@ -1,6 +1,7 @@
 # MongoidEmbedFinder
 
 [![Code Climate](https://codeclimate.com/github/growthrepublic/mongoid_embed_finder.png)](https://codeclimate.com/github/growthrepublic/mongoid_embed_finder)
+[![Build Status](https://travis-ci.org/growthrepublic/mongoid_embed_finder.svg?branch=master)](https://travis-ci.org/growthrepublic/mongoid_embed_finder)
 
 This simple gem lets you find embedded documents easily. It does not instantiate parent record with a whole bunch of embedded documents. Instead it instantiates found embedded documents first and then sets parent association.
 
